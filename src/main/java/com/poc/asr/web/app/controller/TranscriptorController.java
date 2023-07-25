@@ -20,9 +20,17 @@ public class TranscriptorController {
 
 
   @PostMapping("/")
-  public List<String> transcriptFile(@RequestParam("file") MultipartFile file) throws RuntimeException {
-    return transcriptor.transalte(file);
+  public ResponseEntity<?> transcriptFile(@RequestParam("file") MultipartFile file) {
+    try {
+      List<String> transcriptions = transcriptor.transalte(file);
+      return ResponseEntity.ok(transcriptions);
+    } catch (RuntimeException ex) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+    }
   }
 
-
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<String> handleFileException(RuntimeException ex) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+  }
 }
