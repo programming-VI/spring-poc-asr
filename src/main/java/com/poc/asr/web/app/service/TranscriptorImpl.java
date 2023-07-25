@@ -10,6 +10,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ public class TranscriptorImpl implements Transcriptor {
   public List<String> transalte(MultipartFile file) {
     int rate;
     try {
-      AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file.getInputStream());
+      InputStream inputStream = new BufferedInputStream(file.getInputStream());
+      AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
       AudioFormat audioFormat = audioInputStream.getFormat();
       rate = (int) audioFormat.getFrameRate();
     } catch (UnsupportedAudioFileException | IOException e) {
@@ -35,6 +37,7 @@ public class TranscriptorImpl implements Transcriptor {
     configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
     configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
+    System.out.println(rate);
     configuration.setSampleRate(rate);
 
     StreamSpeechRecognizer recognizer;
