@@ -32,25 +32,9 @@ public class TranscriptorImpl implements Transcriptor {
     }
   @Override
   public List<String> transalte(MultipartFile file) {
-    int rate = getSampleRate(file);
-    try {
-      InputStream inputStream = new BufferedInputStream(file.getInputStream());
-      AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
-      AudioFormat audioFormat = audioInputStream.getFormat();
-      rate = (int) audioFormat.getFrameRate();
-    } catch (UnsupportedAudioFileException | IOException e) {
-      throw new RuntimeException(e);
-    }
 
     List<String> response = new ArrayList<>();
-    Configuration configuration = new Configuration();
-
-    configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
-    configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
-    configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-
-    System.out.println(rate);
-    configuration.setSampleRate(rate);
+    Configuration configuration = configureSpeechRecognizer(getSampleRate(file));
 
     StreamSpeechRecognizer recognizer;
     InputStream stream = null;
@@ -70,5 +54,16 @@ public class TranscriptorImpl implements Transcriptor {
       throw new RuntimeException(e);
     }
     return response;
+  }
+
+  private Configuration configureSpeechRecognizer(int sampleRate) {
+    Configuration configuration = new Configuration();
+
+    configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
+    configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
+    configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+    configuration.setSampleRate(sampleRate);
+
+    return configuration;
   }
 }
