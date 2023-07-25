@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,12 +20,9 @@ public class TranscriptorController {
 
 
   @PostMapping("/")
-  public List<String> transcriptFile(@RequestParam("file") MultipartFile file) {
+  public List<String> transcriptFile(@RequestParam("file") MultipartFile file) throws RuntimeException {
     return transcriptor.transalte(file);
   }
 
-  @ExceptionHandler(IOException.class)
-  public ResponseEntity<String> handleIOException(IOException ex) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the file.");
-  }
+
 }
