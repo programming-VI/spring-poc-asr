@@ -18,9 +18,21 @@ import java.util.List;
 
 @Service
 public class TranscriptorImpl implements Transcriptor {
+    private int getSampleRate(MultipartFile file) {
+        int rate;
+        try {
+            InputStream inputStream = new BufferedInputStream(file.getInputStream());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
+            AudioFormat audioFormat = audioInputStream.getFormat();
+            rate = (int) audioFormat.getFrameRate();
+        } catch (UnsupportedAudioFileException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        return rate;
+    }
   @Override
   public List<String> transalte(MultipartFile file) {
-    int rate;
+    int rate = getSampleRate(file);
     try {
       InputStream inputStream = new BufferedInputStream(file.getInputStream());
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
